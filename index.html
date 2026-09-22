@@ -6,7 +6,7 @@
   <title>Email Signature Studio &mdash; school email signatures</title>
   <meta name="description" content="Free email signature designer for schools. Create your school design once, add your staff, and generate ready-made signatures for Outlook web and Gmail. Everything stays in your browser.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%232456c4'/%3E%3Cpath d='M4 6.5 12 12l8-5.5V7l-8 5.5L4 7z' fill='%23fff'/%3E%3Cpath d='M4 8v8.5h16V8l-8 5.5L4 8z' fill='%23fff'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
 
@@ -48,18 +48,6 @@
 
     <!-- ================= STEP 1 : DESIGN ================= -->
     <section id="tab-design" class="tab-panel active" role="tabpanel">
-      <div class="privacy-banner" role="note">
-        <span class="pb-icon" aria-hidden="true">&#128274;</span>
-        <div class="pb-body">
-          <strong>Your staff data stays in your browser</strong>
-          <p>Staff names, email addresses and other information are processed locally on this device. Nothing is uploaded to a server.</p>
-          <details>
-            <summary>More about privacy</summary>
-            <p>This is a static web page &mdash; there is no database and no server side to the page. Templates and staff lists are saved in your own browser (they can be backed up with Export / Import). Share links encode the template into the web address; your CSV file is read on this device and never sent anywhere. Keep CSV files containing emails or phone numbers safe like any other school record under UK GDPR.</p>
-          </details>
-        </div>
-      </div>
-
       <div class="grid">
         <div class="panel">
           <h2>Step 1 &middot; Create your school signature</h2>
@@ -114,7 +102,7 @@
             <input type="file" id="in-import" accept="application/json,.json" hidden>
             <button id="btn-reset" class="btn danger-ghost" type="button">Reset</button>
           </div>
-          <p class="hint mt">&ldquo;Save&rdquo; keeps the design (and your staff list) in this browser. &ldquo;Copy share link&rdquo; encodes everything into the web address so it can be opened on any computer &mdash; no server storage.</p>
+          <p class="hint mt">Save keeps your work in this browser. Share links include your template and staff information so the same setup can be opened on another computer.</p>
 
           <details class="advanced">
             <summary>
@@ -154,14 +142,7 @@
               <iframe id="preview-frame" class="preview-frame" title="Signature preview" sandbox="allow-same-origin"></iframe>
             </div>
           </div>
-          <div class="tip">
-            <strong>Tips for a signature that pastes cleanly:</strong>
-            <ul>
-              <li>Use <strong>inline CSS</strong> (style=&quot;&hellip;&quot;) &mdash; Outlook web and Gmail strip &lt;style&gt; blocks.</li>
-              <li>Keep each field on its <strong>own line</strong>.</li>
-              <li>One <strong>&lt;table&gt;</strong> design pastes most reliably across both mail clients.</li>
-            </ul>
-          </div>
+          <div class="tip">Designed to paste cleanly into Outlook and Gmail.</div>
         </div>
       </div>
     </section>
@@ -171,6 +152,8 @@
       <div class="grid">
         <div class="panel">
           <h2>Step 2 &middot; Add your staff</h2>
+
+          <p class="privacy-tip" role="note"><span aria-hidden="true">&#128274;</span> <strong>Your data stays on your device.</strong> Staff information is processed locally in your browser and isn&rsquo;t uploaded to a server. <a href="privacy.html">Privacy &rarr;</a></p>
 
           <section class="block">
             <h3>Import your staff from a spreadsheet</h3>
@@ -286,7 +269,7 @@
 
   <footer class="foot">
     <div class="container">
-      Email Signature Studio &mdash; free, static, stateless. All data is processed in the browser; nothing is uploaded, logged or stored on any server.
+      Email Signature Studio &mdash; free and private. Your data stays in your browser.
     </div>
   </footer>
 
