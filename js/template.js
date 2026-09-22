@@ -9,6 +9,28 @@ var SIG = (function () {
     'website', 'school_name', 'logo_url', 'default_address', 'default_website'
   ];
 
+  // Placeholder key -> Signature Fields control id.
+  var FIELD_BY_KEY = {
+    full_name: 'name',
+    job_title: 'job_title',
+    email: 'email',
+    phone: 'phone',
+    mobile: 'mobile',
+    department: 'department',
+    website: 'website',
+    school_name: 'school_name',
+    logo_url: 'logo',
+    default_address: 'address',
+    default_website: 'website'
+  };
+
+  // A key is "off" when its field toggle is explicitly false in state.fields.
+  function fieldOff(key, state) {
+    var id = FIELD_BY_KEY[key];
+    if (!id || !state || !state.fields) return false;
+    return state.fields[id] === false;
+  }
+
   function escapeHtml(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -27,22 +49,32 @@ var SIG = (function () {
     return '';
   }
 
+  function gate(key, val, state) {
+    return fieldOff(key, state) ? '' : val;
+  }
+
   function keyValue(key, data, state) {
     var d = data || {};
     switch (key) {
-      case 'full_name':      return d.full_name || '';
-      case 'job_title':      return d.job_title || '';
-      case 'email':          return d.email || '';
-      case 'phone':          return d.phone || '';
-      case 'mobile':         return d.mobile || '';
-      case 'department':     return d.department || '';
-      case 'website':        return safeUrl(d.website || state.defaultWebsite);
-      case 'school_name':    return d.school_name || state.schoolName;
-      case 'logo_url':       return safeUrl(d.logo_url || state.logoUrl);
-      case 'default_address':return d.default_address || state.defaultAddress;
-      case 'default_website':return safeUrl(d.default_website || state.defaultWebsite);
-      default:               return '';
+      case 'full_name':       return gate(key, d.full_name || '', state);
+      case 'job_title':       return gate(key, d.job_title || '', state);
+      case 'email':           return gate(key, d.email || '', state);
+      case 'phone':           return gate(key, d.phone || '', state);
+      case 'mobile':          return gate(key, d.mobile || '', state);
+      case 'department':      return gate(key, d.department || '', state);
+      case 'website':         return gate(key, safeUrl(d.website || state.defaultWebsite), state);
+      case 'school_name':     return gate(key, d.school_name || state.schoolName, state);
+      case 'logo_url':        return gate(key, safeUrl(d.logo_url || state.logoUrl), state);
+      case 'default_address': return gate(key, d.default_address || state.defaultAddress, state);
+      case 'default_website': return gate(key, safeUrl(d.default_website || state.defaultWebsite), state);
+      default:                return '';
     }
+  }
+
+  function tokensIn(line) {
+    var t = [];
+    String(line || '').replace(TOKEN_RE, function (m, key) { t.push(key); return m; });
+    return t;
   }
 
   function substitute(line, data, state) {
@@ -60,11 +92,8 @@ var SIG = (function () {
       if (keyValue(key, data, state) !== '') allEmpty = false;
       return m;
     });
-    // Structural lines (table/tr/td etc.) contain no placeholder and are always kept.
     if (!hasToken) return false;
-    // Line has a placeholder with a value, so it stays.
     if (!allEmpty) return false;
-    // Placeholder line rendered empty (e.g. <div>{{department}}</div> with no department).
     var text = line
       .replace(/<[^>]*>/g, '')
       .replace(/&nbsp;/gi, '')
@@ -77,6 +106,11 @@ var SIG = (function () {
     var lines = String(html || '').split(/\r?\n/);
     var out = [];
     for (var i = 0; i < lines.length; i++) {
+      var toks = tokensIn(lines[i]);
+      // A line built around a single placeholder belongs to that field:
+      // when the field is switched off the whole line is dropped, even if it
+      // carries static text such as a "Tel:" label.
+      if (toks.length === 1 && fieldOff(toks[0], state)) continue;
       if (collapse !== false && isBlankAfterFill(lines[i], data, state)) continue;
       out.push(substitute(lines[i], data, state));
     }
@@ -85,11 +119,14 @@ var SIG = (function () {
 
   function buildStarter(accent) {
     var co = /^#[0-9a-f]{6}$/i.test(accent || '') ? accent : '#1f4e79';
+    // Every supported field line is present; Signature Fields toggles decide
+    // which ones survive into a generated signature (fields switched off are
+    // dropped at render time, so they never appear in output).
     return [
       '<table cellpadding="0" cellspacing="0" border="0" style="font-family:\'Segoe UI\',Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#333333;">',
       '  <tr>',
-      '    <td valign="middle" style="padding-right:15px;">',
-      '      <img src="{{logo_url}}" alt="" style="display:block;max-height:80px;width:auto;" />',
+      '    <td valign="middle">',
+      '      <img src="{{logo_url}}" alt="" style="display:block;max-height:80px;width:auto;margin-right:15px;" />',
       '    </td>',
       '    <td valign="middle" style="border-left:3px solid ' + co + ';padding-left:15px;">',
       '      <div style="font-size:16px;font-weight:bold;color:' + co + ';">{{full_name}}</div>',
@@ -97,8 +134,8 @@ var SIG = (function () {
       '      <div style="color:#555555;">{{department}}</div>',
       '      <div style="height:8px;font-size:0;">&nbsp;</div>',
       '      <div><a href="mailto:{{email}}" style="color:' + co + ';text-decoration:none;">{{email}}</a></div>',
-      '      <div>Phone: {{phone}}</div>',
-      '      <div>Mobile: {{mobile}}</div>',
+      '      <div><a href="tel:{{phone}}" style="color:' + co + ';text-decoration:none;">{{phone}}</a></div>',
+      '      <div><a href="tel:{{mobile}}" style="color:' + co + ';text-decoration:none;">{{mobile}}</a></div>',
       '      <div style="height:8px;font-size:0;">&nbsp;</div>',
       '      <div style="font-size:14px;font-weight:bold;color:' + co + ';">{{school_name}}</div>',
       '      <div style="color:#888888;font-size:12px;">{{default_address}}</div>',
@@ -130,6 +167,8 @@ var SIG = (function () {
   return {
     KEYS: KEYS,
     TOKEN_RE: TOKEN_RE,
+    FIELD_BY_KEY: FIELD_BY_KEY,
+    fieldOff: fieldOff,
     renderSignature: renderSignature,
     buildStarter: buildStarter,
     wrapPreview: wrapPreview,

@@ -81,20 +81,72 @@ var SigCSV = (function () {
 
   var COLUMNS = ['name', 'job title', 'email', 'phone', 'mobile', 'department', 'website'];
 
-  function templateCSV() {
-    var example = ['Jane Smith', 'Year 5 Teacher', 'jane.smith@example.sch.uk', '01223 456 789', '07700 900 123', 'Learning & Teaching', 'www.example.sch.uk'];
+  var CSV_COLUMNS = [
+    { key: 'full_name', label: 'name' },
+    { key: 'job_title', label: 'job title' },
+    { key: 'email', label: 'email' },
+    { key: 'phone', label: 'phone' },
+    { key: 'mobile', label: 'mobile' },
+    { key: 'department', label: 'department' },
+    { key: 'website', label: 'website' }
+  ];
+
+  // Parse CSV text into an array of objects keyed by internal field names.
+  // The first row must contain headers. Rows are objects like
+  // { full_name, job_title, email, ... } with only the fields it has values for.
+  // When enabledKeys (an array of internal keys) is supplied, any column whose
+  // key is not in the list is ignored, so disabled Signature Fields are never
+  // imported.
+  function toRecords(text, enabledKeys) {
+    var rows = parseCSV(text);
+    if (rows.length === 0) return [];
+    var headers = rows[0].map(normaliseHeader).map(function (h) { return HEADER_MAP[h] || null; });
+    var records = [];
+    for (var r = 1; r < rows.length; r++) {
+      var rec = {};
+      var line = rows[r];
+      for (var c = 0; c < headers.length; c++) {
+        var key = headers[c];
+        if (!key) continue;
+        if (enabledKeys && enabledKeys.indexOf(key) === -1) continue;
+        var val = (line[c] || '').trim();
+        if (val !== '') rec[key] = val;
+      }
+      records.push(rec);
+    }
+    return records;
+  }
+
+  var EXAMPLE = {
+    full_name: 'Jane Smith',
+    job_title: 'Year 5 Teacher',
+    email: 'jane.smith@example.sch.uk',
+    phone: '01223 456 789',
+    mobile: '07700 900 123',
+    department: 'Learning & Teaching',
+    website: 'www.example.sch.uk'
+  };
+
+  // A CSV template that only contains the enabled staff fields.
+  function templateCSV(enabledKeys) {
+    var cols = CSV_COLUMNS.filter(function (c) {
+      return !enabledKeys || enabledKeys.indexOf(c.key) !== -1;
+    });
+    if (cols.length === 0) cols = [CSV_COLUMNS[0]];
     var esc = function (v) {
       v = String(v == null ? '' : v);
       return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
     };
-    return COLUMNS.map(esc).join(',') + '\r\n' + example.map(esc).join(',') + '\r\n';
+    return cols.map(function (c) { return esc(c.label); }).join(',') + '\r\n' +
+      cols.map(function (c) { return esc(EXAMPLE[c.key]); }).join(',') + '\r\n';
   }
 
   return {
     toRecords: toRecords,
     parseCSV: parseCSV,
     templateCSV: templateCSV,
-    COLUMNS: COLUMNS
+    COLUMNS: COLUMNS,
+    CSV_COLUMNS: CSV_COLUMNS
   };
 })();
 
