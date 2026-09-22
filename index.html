@@ -1,0 +1,218 @@
+﻿<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email Signature Studio &mdash; school email signatures</title>
+  <meta name="description" content="Free email signature designer for schools. Design a template, add your staff from a spreadsheet, and copy signatures into Outlook web or Gmail. No data is uploaded or stored.">
+  <link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+
+  <header class="top">
+    <div class="container">
+      <h1>Email Signature Studio</h1>
+      <p class="tagline">Design once, hand a signature to every member of staff. Works with <strong>Outlook web</strong> and <strong>Gmail</strong>.</p>
+      <p class="privacy-note"><span aria-hidden="true">&#128274;</span> Your data never leaves this page. Everything is processed in your browser &mdash; nothing is uploaded or stored by the site.</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <nav class="tabs" role="tablist" aria-label="Main sections">
+      <button class="tab-btn active" data-tab="design" role="tab" aria-selected="true">1. Design template</button>
+      <button class="tab-btn" data-tab="staff" role="tab" aria-selected="false">2. Add your staff</button>
+      <button class="tab-btn" data-tab="guide" role="tab" aria-selected="false">Admin guide</button>
+      <a class="tab-btn tab-link" href="staff-guide.html">Staff guide (Outlook / Gmail)</a>
+    </nav>
+
+    <!-- ================= DESIGN ================= -->
+    <section id="tab-design" class="tab-panel active" role="tabpanel">
+      <div class="grid">
+        <div class="panel">
+          <h2>Design your template</h2>
+
+          <div class="field">
+            <label for="in-school-name">School / organisation name</label>
+            <input type="text" id="in-school-name" placeholder="Example Primary School">
+          </div>
+
+          <div class="field">
+            <label for="in-logo-url">Logo image URL (must be hosted)</label>
+            <input type="text" id="in-logo-url" placeholder="https://yourschool.sharepoint.com/.../logo.png">
+            <span class="hint">The logo must be hosted somewhere public &mdash; for example a SharePoint/OneDrive link or your school website. Signatures reference the address; the image is never uploaded here.</span>
+          </div>
+
+          <div class="field">
+            <label for="in-address">Default address (shown under the school name)</label>
+            <input type="text" id="in-address" placeholder="Main Road, Cambridge CB1 2AB">
+          </div>
+
+          <div class="field">
+            <label for="in-website">Default website</label>
+            <input type="text" id="in-website" placeholder="www.example.sch.uk">
+          </div>
+
+          <div class="field">
+            <label for="in-accent">Signature colour</label>
+            <div class="row-inline">
+              <input type="color" id="in-accent" value="#1f4e79" aria-label="Signature colour">
+              <span class="hint">Used for the person&rsquo;s name, the school name, links and the side bar. Click <em>Build template</em> below to apply it, or use <em>Apply to current</em> to recolour a saved design.</span>
+            </div>
+          </div>
+
+          <div class="row-inline">
+            <button id="btn-build" class="btn" type="button">Build template from these details</button>
+            <button id="btn-accent" class="btn ghost" type="button">Apply colour to current</button>
+            <span class="hint">Rebuilds your signature with this design &mdash; the preview updates instantly.</span>
+          </div>
+
+          <details class="advanced">
+            <summary>Advanced: edit the HTML</summary>
+            <p class="hint">For people comfortable with HTML. Click a label below to insert the matching placeholder (e.g. <code>{{full_name}}</code>); it is replaced with each person&rsquo;s details. Lines with empty values disappear automatically.</p>
+            <div class="chips" aria-label="Insert placeholder">
+              <button class="chip" type="button" data-insert="{{full_name}}">full name</button>
+              <button class="chip" type="button" data-insert="{{job_title}}">job title</button>
+              <button class="chip" type="button" data-insert="{{email}}">email</button>
+              <button class="chip" type="button" data-insert="{{phone}}">phone</button>
+              <button class="chip" type="button" data-insert="{{mobile}}">mobile</button>
+              <button class="chip" type="button" data-insert="{{department}}">department</button>
+              <button class="chip" type="button" data-insert="{{website}}">website</button>
+              <button class="chip" type="button" data-insert="{{school_name}}">school name</button>
+              <button class="chip" type="button" data-insert="{{logo_url}}">logo url</button>
+              <button class="chip" type="button" data-insert="{{default_address}}">address</button>
+            </div>
+            <textarea id="in-html" spellcheck="false" aria-label="Signature HTML template"></textarea>
+          </details>
+
+          <div class="save-row">
+            <button id="btn-save" class="btn" type="button">Save template</button>
+            <button id="btn-sharelink" class="btn ghost" type="button">Copy share link</button>
+            <button id="btn-export" class="btn ghost" type="button">Export (.json)</button>
+            <label class="btn ghost" for="in-import">Import (.json)</label>
+            <input type="file" id="in-import" accept="application/json,.json" hidden>
+            <button id="btn-reset" class="btn danger-ghost" type="button">Reset</button>
+          </div>
+          <p class="hint mt">&ldquo;Save&rdquo; keeps the template in this browser. &ldquo;Copy share link&rdquo; puts the template inside the web address so it can be opened anywhere or sent to a colleague &mdash; no server storage.</p>
+          <p id="toast" class="toast" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Live preview <span class="hint">(shows sample person)</span></h2>
+          <iframe id="preview-frame" class="preview-frame" title="Signature preview" sandbox="allow-same-origin"></iframe>
+          <div class="tip">
+            <strong>Tips for a signature that pastes cleanly:</strong>
+            <ul>
+              <li>Use <strong>inline CSS</strong> (style=&quot;&hellip;&quot;) &mdash; Outlook web and Gmail strip &lt;style&gt; blocks.</li>
+              <li>Keep optional labels on their <strong>own line</strong>. Empty lines (e.g. a blank department) disappear automatically.</li>
+              <li>One <strong>&lt;table&gt;</strong> design pastes most reliably across both mail clients.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STAFF ================= -->
+    <section id="tab-staff" class="tab-panel" role="tabpanel">
+      <div class="grid">
+        <div class="panel">
+          <h2>1. Upload a spreadsheet (CSV)</h2>
+          <p class="hint">Columns: <code>name</code>, <code>job title</code>, <code>email</code>, <code>phone</code>, <code>mobile</code>, <code>department</code>, <code>website</code>. Only <code>name</code> is required.</p>
+          <div class="row-inline">
+            <button id="btn-csv-template" class="btn ghost" type="button">Download CSV template</button>
+            <label class="btn" for="in-csv">Upload CSV</label>
+            <input type="file" id="in-csv" accept=".csv,text/csv" hidden>
+            <button id="btn-sample" class="btn ghost" type="button">Load example data</button>
+          </div>
+          <p class="hint">Try it now: <strong>Load example data</strong> shows six sample staff so you can test the Copy/Download buttons. Or <strong>Download CSV template</strong> and edit it in Excel/Sheets, then upload.</p>
+          <p class="hint">Your spreadsheet is read on this device and never uploaded. If you take on new staff, upload the updated file again &mdash; it will rebuild every signature.</p>
+
+          <h3 class="mt">2. Or enter one person&rsquo;s details</h3>
+          <div class="grid small-grid">
+            <div class="field"><label for="p-name">Full name</label><input id="p-name" type="text" placeholder="Jane Smith"></div>
+            <div class="field"><label for="p-title">Job title</label><input id="p-title" type="text" placeholder="Year 5 Teacher"></div>
+            <div class="field"><label for="p-email">Email</label><input id="p-email" type="text" placeholder="jane@example.sch.uk"></div>
+            <div class="field"><label for="p-phone">Phone</label><input id="p-phone" type="text" placeholder="01223 456 789"></div>
+            <div class="field"><label for="p-mobile">Mobile</label><input id="p-mobile" type="text" placeholder="07700 900 123"></div>
+            <div class="field"><label for="p-dept">Department</label><input id="p-dept" type="text" placeholder="Learning &amp; Teaching"></div>
+            <div class="field"><label for="p-website">Website (optional)</label><input id="p-website" type="text" placeholder="www.example.sch.uk"></div>
+          </div>
+          <button id="btn-add-person" class="btn" type="button">Generate this signature</button>
+          <p id="staff-toast" class="toast" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Generated signatures</h2>
+          <div id="results-bar" class="row-inline" hidden>
+            <strong id="results-count"></strong>
+            <button id="btn-zip" class="btn" type="button">Download all (.zip)</button>
+            <label class="checkbox"><input type="checkbox" id="toggle-previews" checked> Show previews</label>
+          </div>
+          <p class="hint" id="zip-hint" hidden>One .html file per person inside the .zip &mdash; extract it on the school computer, open each file, Ctrl+A / Ctrl+C, then paste into Outlook web or Gmail.</p>
+          <div id="staff-results">
+            <p class="hint empty-hint">Upload a CSV or enter a name to see signatures here. Each card has a <em>Copy</em> button &mdash; paste straight into Outlook web or Gmail settings.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ADMIN GUIDE ================= -->
+    <section id="tab-guide" class="tab-panel" role="tabpanel">
+      <div class="panel">
+        <h2>Admin guide</h2>
+
+        <h3>1. Create the template</h3>
+        <ol>
+          <li>Enter your school name, logo URL, address and website, then click <strong>Build template from these details</strong>.</li>
+          <li>Use the live preview to check the design. Click the placeholder buttons (full name, job title&hellip;) to insert labels that get replaced per person.</li>
+          <li>If you know HTML, you can refine the design further under <strong>Advanced: edit the HTML</strong>. Keep styling <strong>inline</strong> &mdash; Outlook web and Gmail ignore &lt;style&gt; blocks.</li>
+        </ol>
+
+        <h3>2. Save &amp; share your template</h3>
+        <ul>
+          <li><strong>Save template</strong> stores it in this browser (you do not need to re-enter it next time).</li>
+          <li><strong>Copy share link</strong> encodes the template into the web address. Open that link on any computer to get your saved design &mdash; the template rides inside the URL, so nothing is stored on a server.</li>
+          <li><strong>Export (.json)</strong> downloads a backup file; <strong>Import (.json)</strong> restores it. Keep a copy in case a browser&rsquo;s saved data is cleared.</li>
+          <li>To send a ready-made signature to a staff member, they can open your <strong>share link</strong> and enter their own details on the &ldquo;Add your staff&rdquo; tab.</li>
+        </ul>
+
+        <h3>3. Add (or update) your staff</h3>
+        <ol>
+          <li>Download the CSV template, fill it in (or export from your HR/admin spreadsheet), then upload it.</li>
+          <li>Signatures appear as cards &mdash; click <strong>Copy</strong> and paste into each person&rsquo;s Outlook or Gmail settings, or send them the file via <strong>Download .html</strong>.</li>
+          <li>When you recruit, re-upload the updated CSV &mdash; every signature rebuilds instantly.</li>
+        </ol>
+        <p>Ask staff to follow the <a href="staff-guide.html">staff guide</a>, which covers Outlook web and Gmail step by step.</p>
+
+        <h3>4. Privacy &amp; UK data protection</h3>
+        <p>This site is designed to make data protection easy:</p>
+        <ul>
+          <li><strong>No server-side storage.</strong> The tool is a static page: templates, CSV files and generated signatures exist only in the visitor&rsquo;s browser.</li>
+          <li><strong>Minimal personal data.</strong> Typically names and job titles only &mdash; low sensitivity. If you include emails/phones, that is still personal data under UK GDPR, so treat the CSV like any school record (don&rsquo;t share the file externally).</li>
+          <li><strong>Hosted logos.</strong> Keep the image URL on your school&rsquo;s own hosting (e.g. SharePoint) so image requests stay within your control.</li>
+          <li>Host this page on any static host (GitHub Pages, Netlify, Azure Static Web Apps&hellip;). Because it stores nothing, there&rsquo;s no database to secure and no processor to add to your record of processing.</li>
+        </ul>
+
+        <h3>5. FAQ</h3>
+        <div class="faq">
+          <p><strong>Outlook shows the logo as a broken/blocked image.</strong> Outlook blocks external images until a receiver clicks <em>Download pictures</em> or allows the sender. Ask staff to <em>Allow this sender</em> once, and test-sign to a colleague.</p>
+          <p><strong>Gmail doesn&rsquo;t show my logo.</strong> Gmail warps through its image proxy and normally loads hosted images automatically. If it looks broken, check the logo URL is public and doesn&rsquo;t require sign-in.</p>
+          <p><strong>Pastings lose the layout.</strong> Webmail lightly rewrites pasted content. Keeping the design to a single &lt;table&gt; with inline styles gives the most reliable result. If colours shift, view it as &ldquo;plain text signature made pretty&rdquo; &mdash; small tweaks are expected.</p>
+          <p><strong>The copy button did nothing.</strong> Some browsers block clipboard writes. Use <strong>Download .html</strong> instead: open the file, select its content (Ctrl+A) and copy (Ctrl+C), then paste into the signature box.</p>
+          <p><strong>Where are signatures stored?</strong> Outlook web: Settings &rarr; Mail &rarr; Compose and reply &rarr; Email signature. Gmail: Settings &rarr; See all settings &rarr; Signature. Details are on the <a href="staff-guide.html">staff guide</a>.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <div class="container">
+      Email Signature Studio &mdash; free, static, stateless. All data is processed in the browser; nothing is uploaded, logged or stored on any server.
+    </div>
+  </footer>
+
+  <script src="js/csv.js?v=5"></script>
+  <script src="js/template.js?v=5"></script>
+  <script src="js/zip.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
+</body>
+</html>
